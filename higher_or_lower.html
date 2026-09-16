@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Higher or Lower - 주사위 게임</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #1e40af;
+            --success: #10b981;
+            --danger: #ef4444;
+            --light: #f3f4f6;
+            --dark: #1f2937;
+            --border: #e5e7eb;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --primary: #60a5fa;
+                --primary-dark: #1e3a8a;
+                --success: #059669;
+                --danger: #dc2626;
+                --light: #1f2937;
+                --dark: #f3f4f6;
+                --border: #374151;
+            }
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: var(--light);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #6b7280;
+            margin-bottom: 30px;
+            font-size: 0.95em;
+        }
+
+        .score-board {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .score-box {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid var(--border);
+        }
+
+        .score-label {
+            color: #6b7280;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .score-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .streak-box .score-value {
+            color: var(--success);
+        }
+
+        .game-state {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+            border: 2px solid var(--border);
+        }
+
+        .dice-display {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .dice {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 45px;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .dice.rolling {
+            animation: roll 0.4s ease-in-out;
+        }
+
+        @keyframes roll {
+            0%, 100% { transform: rotateX(0) rotateY(0); }
+            50% { transform: rotateX(180deg) rotateY(180deg); }
+        }
+
+        .dice.hidden {
+            background: linear-gradient(135deg, #9ca3af, #6b7280);
+            font-size: 0;
+        }
+
+        .current-label {
+            color: #6b7280;
+            font-size: 0.85em;
+            margin-bottom: 5px;
+        }
+
+        .next-label {
+            color: #6b7280;
+            font-size: 0.85em;
+            margin-bottom: 5px;
+        }
+
+        .question {
+            font-size: 1.3em;
+            color: var(--dark);
+            margin: 20px 0;
+            font-weight: 600;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 15px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .choice-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .choice-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        .choice-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .restart-btn {
+            background: var(--danger);
+            color: white;
+            grid-column: 1 / -1;
+            margin-top: 10px;
+        }
+
+        .restart-btn:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        .result-message {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+            min-height: 30px;
+        }
+
+        .result-message.correct {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+            border-left: 4px solid var(--success);
+        }
+
+        .result-message.incorrect {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+            border-left: 4px solid var(--danger);
+        }
+
+        .game-over {
+            text-align: center;
+            padding: 20px;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 10px;
+            border: 2px solid var(--danger);
+        }
+
+        .game-over h2 {
+            color: var(--danger);
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .stat-item-label {
+            color: #6b7280;
+            font-size: 0.85em;
+            margin-bottom: 5px;
+        }
+
+        .stat-item-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .multiplier {
+            display: inline-block;
+            background: var(--success);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8em;
+            margin-left: 5px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎲 Higher or Lower</h1>
+        <p class="subtitle">다음 주사위가 더 높을까? 낮을까?</p>
+
+        <div class="score-board">
+            <div class="score-box">
+                <div class="score-label">점수</div>
+                <div class="score-value" id="score">0</div>
+            </div>
+            <div class="score-box streak-box">
+                <div class="score-label">연쇄 성공</div>
+                <div class="score-value" id="streak">0</div>
+            </div>
+        </div>
+
+        <div class="game-state">
+            <div class="dice-display">
+                <div>
+                    <div class="current-label">현재</div>
+                    <div class="dice" id="currentDice">?</div>
+                </div>
+                <div style="display: flex; align-items: center; font-size: 1.5em; color: #6b7280;">→</div>
+                <div>
+                    <div class="next-label">다음</div>
+                    <div class="dice hidden" id="nextDice">?</div>
+                </div>
+            </div>
+
+            <div class="question" id="question">게임을 시작하려면 "시작" 버튼을 누르세요</div>
+            <div class="result-message" id="resultMessage"></div>
+
+            <div class="button-group" id="buttonGroup">
+                <button class="choice-btn" id="lowerBtn" onclick="makePrediction('lower')">낮을까</button>
+                <button class="choice-btn" id="sameBtn" onclick="makePrediction('same')">같을까</button>
+                <button class="choice-btn" id="higherBtn" onclick="makePrediction('higher')">높을까</button>
+                <button class="restart-btn" id="restartBtn" onclick="startGame()" style="display: none;">다시 시작</button>
+                <button class="restart-btn" id="startBtn" onclick="startGame()">시작</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentValue = 0;
+        let nextValue = 0;
+        let score = 0;
+        let streak = 0;
+        let gameOver = false;
+        let gameStarted = false;
+        let isRolling = false;
+
+        const currentDiceEl = document.getElementById('currentDice');
+        const nextDiceEl = document.getElementById('nextDice');
+        const questionEl = document.getElementById('question');
+        const resultMessageEl = document.getElementById('resultMessage');
+        const scoreEl = document.getElementById('score');
+        const streakEl = document.getElementById('streak');
+        const startBtn = document.getElementById('startBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const buttonGroup = document.getElementById('buttonGroup');
+        const lowerBtn = document.getElementById('lowerBtn');
+        const sameBtn = document.getElementById('sameBtn');
+        const higherBtn = document.getElementById('higherBtn');
+
+        function rollDice() {
+            return Math.floor(Math.random() * 6) + 1;
+        }
+
+        function startGame() {
+            currentValue = rollDice();
+            nextValue = 0;
+            gameOver = false;
+            gameStarted = true;
+            isRolling = false;
+
+            currentDiceEl.textContent = currentValue;
+            nextDiceEl.classList.add('hidden');
+            nextDiceEl.textContent = '';
+            questionEl.textContent = `현재 주사위: ${currentValue} | 다음 주사위가 ${currentValue}보다 높을까요?`;
+            resultMessageEl.textContent = '';
+            resultMessageEl.className = '';
+
+            startBtn.style.display = 'none';
+            restartBtn.style.display = 'none';
+            lowerBtn.disabled = false;
+            sameBtn.disabled = false;
+            higherBtn.disabled = false;
+        }
+
+        function makePrediction(prediction) {
+            if (isRolling || gameOver) return;
+            isRolling = true;
+
+            lowerBtn.disabled = true;
+            sameBtn.disabled = true;
+            higherBtn.disabled = true;
+
+            nextDiceEl.classList.remove('hidden');
+            nextDiceEl.classList.add('rolling');
+
+            setTimeout(() => {
+                nextValue = rollDice();
+                nextDiceEl.textContent = nextValue;
+                nextDiceEl.classList.remove('rolling');
+
+                let correct = false;
+
+                if (prediction === 'higher' && nextValue > currentValue) {
+                    correct = true;
+                } else if (prediction === 'lower' && nextValue < currentValue) {
+                    correct = true;
+                } else if (prediction === 'same' && nextValue === currentValue) {
+                    correct = true;
+                }
+
+                if (correct) {
+                    streak++;
+                    const multiplier = Math.min(streak, 6);
+                    score += multiplier;
+
+                    resultMessageEl.className = 'result-message correct';
+                    resultMessageEl.innerHTML = `✓ 정답! +${multiplier}점 <span class="multiplier">${multiplier}배</span>`;
+
+                    streakEl.textContent = streak;
+                    scoreEl.textContent = score;
+
+                    setTimeout(() => {
+                        currentValue = nextValue;
+                        currentDiceEl.textContent = currentValue;
+                        nextDiceEl.classList.add('hidden');
+                        nextDiceEl.textContent = '';
+                        questionEl.textContent = `현재 주사위: ${currentValue} | 다음 주사위가 어떻게 될까요?`;
+                        resultMessageEl.textContent = '';
+                        resultMessageEl.className = '';
+
+                        lowerBtn.disabled = false;
+                        sameBtn.disabled = false;
+                        higherBtn.disabled = false;
+                        isRolling = false;
+                    }, 800);
+                } else {
+                    gameOver = true;
+                    resultMessageEl.className = 'result-message incorrect';
+                    resultMessageEl.innerHTML = `✗ 오답! 게임 오버`;
+
+                    questionEl.innerHTML = `
+                        <div class="game-over">
+                            <h2>게임 오버! 🎮</h2>
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <div class="stat-item-label">최종 점수</div>
+                                    <div class="stat-item-value">${score}</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-item-label">연쇄 기록</div>
+                                    <div class="stat-item-value">${streak}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    lowerBtn.disabled = true;
+                    sameBtn.disabled = true;
+                    higherBtn.disabled = true;
+                    restartBtn.style.display = 'block';
+                    isRolling = false;
+                }
+            }, 600);
+        }
+
+        startGame();
+    </script>
+</body>
+</html>

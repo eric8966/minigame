@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>주사위 시뮬레이터</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --light: #f3f4f6;
+            --dark: #1f2937;
+            --border: #e5e7eb;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --primary: #818cf8;
+                --primary-dark: #6366f1;
+                --light: #1f2937;
+                --dark: #f3f4f6;
+                --border: #374151;
+            }
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: var(--light);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 40px;
+            font-size: 2.5em;
+        }
+
+        .dice-section {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .dice {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border: 3px solid var(--primary);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            font-weight: bold;
+            color: var(--primary);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.1s ease;
+            cursor: default;
+        }
+
+        .dice.rolling {
+            animation: roll 0.5s ease-in-out;
+        }
+
+        @keyframes roll {
+            0%, 100% { transform: rotateX(0) rotateY(0); }
+            25% { transform: rotateX(180deg) rotateY(180deg); }
+            50% { transform: rotateX(360deg) rotateY(360deg); }
+            75% { transform: rotateX(180deg) rotateY(180deg); }
+        }
+
+        .result-section {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            border: 2px solid var(--border);
+        }
+
+        .result-label {
+            color: #6b7280;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .total-value {
+            font-size: 3em;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        button {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        #rollBtn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            flex: 1;
+            max-width: 200px;
+        }
+
+        #rollBtn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+        }
+
+        #rollBtn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        #resetBtn {
+            background: #ef4444;
+            color: white;
+            padding: 12px 25px;
+        }
+
+        #resetBtn:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        .history-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid var(--border);
+        }
+
+        .history-title {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .history-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            background: #f0f9ff;
+            border: 1px solid var(--primary);
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 0.9em;
+        }
+
+        .history-item:hover {
+            background: #e0f2fe;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid var(--border);
+        }
+
+        .stat-box {
+            text-align: center;
+        }
+
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.85em;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎲 주사위 시뮬레이터</h1>
+
+        <div class="dice-section">
+            <div class="dice" id="dice1">0</div>
+            <div class="dice" id="dice2">0</div>
+        </div>
+
+        <div class="result-section">
+            <div class="result-label">합계</div>
+            <div class="total-value" id="total">0</div>
+        </div>
+
+        <div class="button-group">
+            <button id="rollBtn">주사위 굴리기</button>
+            <button id="resetBtn">초기화</button>
+        </div>
+
+        <div class="history-section">
+            <div class="history-title">📊 기록</div>
+            <div class="history-list" id="history"></div>
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-label">총 횟수</div>
+                    <div class="stat-value" id="count">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">평균</div>
+                    <div class="stat-value" id="average">0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const dice1 = document.getElementById('dice1');
+        const dice2 = document.getElementById('dice2');
+        const total = document.getElementById('total');
+        const rollBtn = document.getElementById('rollBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const history = document.getElementById('history');
+        const count = document.getElementById('count');
+        const average = document.getElementById('average');
+
+        let rolls = [];
+        let isRolling = false;
+
+        function getRandomDice() {
+            return Math.floor(Math.random() * 6) + 1;
+        }
+
+        function updateStats() {
+            count.textContent = rolls.length;
+            if (rolls.length > 0) {
+                const avg = (rolls.reduce((a, b) => a + b, 0) / rolls.length).toFixed(1);
+                average.textContent = avg;
+            } else {
+                average.textContent = '0';
+            }
+        }
+
+        function updateHistory() {
+            history.innerHTML = '';
+            rolls.slice().reverse().forEach((roll, index) => {
+                const item = document.createElement('div');
+                item.className = 'history-item';
+                item.textContent = roll;
+                history.appendChild(item);
+            });
+        }
+
+        function rollDice() {
+            if (isRolling) return;
+            isRolling = true;
+            rollBtn.disabled = true;
+
+            dice1.classList.add('rolling');
+            dice2.classList.add('rolling');
+
+            const value1 = getRandomDice();
+            const value2 = getRandomDice();
+
+            setTimeout(() => {
+                dice1.textContent = value1;
+                dice2.textContent = value2;
+                const sum = value1 + value2;
+                total.textContent = sum;
+
+                rolls.push(sum);
+                updateHistory();
+                updateStats();
+
+                dice1.classList.remove('rolling');
+                dice2.classList.remove('rolling');
+                isRolling = false;
+                rollBtn.disabled = false;
+            }, 500);
+        }
+
+        function reset() {
+            rolls = [];
+            dice1.textContent = '0';
+            dice2.textContent = '0';
+            total.textContent = '0';
+            updateHistory();
+            updateStats();
+            isRolling = false;
+            rollBtn.disabled = false;
+        }
+
+        rollBtn.addEventListener('click', rollDice);
+        resetBtn.addEventListener('click', reset);
+
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !isRolling) {
+                rollDice();
+            }
+        });
+    </script>
+</body>
+</html>
