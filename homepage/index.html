@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>백창헌 · 포트폴리오</title>
+  <style>
+    /* ---------- reset & base ---------- */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0e1116;
+      --bg-card: #161b22;
+      --bg-card-alt: #1c232c;
+      --border: #2a323c;
+      --text: #e6edf3;
+      --text-dim: #8b949e;
+      --accent: #58a6ff;
+      --accent-glow: rgba(88, 166, 255, 0.15);
+      --green: #3fb950;
+      --font: 'Inter', 'Noto Sans KR', system-ui, -apple-system, sans-serif;
+      --mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+      --maxw: 1100px;
+      --radius: 14px;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+    ::selection { background: var(--accent); color: #000; }
+
+    /* ---------- layout ---------- */
+    .wrapper { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+
+    /* ---------- nav ---------- */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      backdrop-filter: blur(12px);
+      background: rgba(14, 17, 22, 0.82);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px;
+    }
+    .logo {
+      font-family: var(--mono);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+    .logo span { color: var(--accent); }
+    nav.links { display: flex; gap: 6px; }
+    nav.links a {
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 8px;
+      transition: color .15s, background .15s;
+    }
+    nav.links a:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+    .menu-btn {
+      display: none;
+      background: none; border: 1px solid var(--border);
+      color: var(--text); padding: 6px 10px;
+      border-radius: 8px; cursor: pointer; font-size: 0.85rem;
+    }
+
+    /* ---------- hero ---------- */
+    .hero {
+      padding: 100px 0 60px;
+      text-align: center;
+    }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 6px 14px;
+      border-radius: 999px;
+      margin-bottom: 28px;
+    }
+    .hero-tag .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--green); box-shadow: 0 0 8px var(--green);
+    }
+    .hero h1 {
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 18px;
+    }
+    .hero h1 .highlight {
+      background: linear-gradient(135deg, var(--accent), #a371f7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: 1.15rem;
+      color: var(--text-dim);
+      max-width: 600px;
+      margin: 0 auto 32px;
+    }
+    .hero-stats {
+      display: flex; justify-content: center; gap: 36px; flex-wrap: wrap;
+      font-family: var(--mono); font-size: 0.82rem;
+    }
+    .hero-stats div {
+      border: 1px solid var(--border);
+      padding: 10px 18px;
+      border-radius: var(--radius);
+      background: var(--bg-card);
+    }
+    .hero-stats .label { color: var(--text-dim); margin-bottom: 4px; }
+    .hero-stats .val { color: var(--text); font-weight: 600; }
+
+    /* ---------- section ---------- */
+    section { padding: 64px 0; border-top: 1px solid var(--border); }
+    section:first-of-type { border-top: none; }
+    .section-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+    .section-sub {
+      color: var(--text-dim);
+      font-size: 0.95rem;
+      margin-bottom: 40px;
+    }
+    .section-title::after {
+      content: '';
+      display: block;
+      width: 48px; height: 3px;
+      background: var(--accent);
+      border-radius: 2px;
+      margin-top: 10px;
+    }
+
+    /* ---------- about ---------- */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+    }
+    .about-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+    }
+    .about-card p { color: var(--text-dim); font-size: 0.95rem; }
+    .about-card strong { color: var(--text); }
+    .about-card .taglist {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      margin-top: 16px;
+    }
+    .about-card .tag {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--accent);
+      background: var(--accent-glow);
+      border: 1px solid rgba(88,166,255,0.2);
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    /* ---------- project (main) ---------- */
+    .project-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+    .project-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 3px;
+      background: linear-gradient(90deg, var(--accent), #a371f7, var(--green));
+      opacity: 0.6;
+    }
+    .project-card .badge {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--green);
+      background: rgba(63,185,80,0.12);
+      border: 1px solid rgba(63,185,80,0.25);
+      padding: 3px 10px;
+      border-radius: 6px;
+      margin-bottom: 16px;
+    }
+    .project-card h3 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      letter-spacing: -0.01em;
+    }
+    .project-card .meta {
+      color: var(--text-dim); font-size: 0.88rem;
+      margin-bottom: 20px;
+    }
+    .project-card p { color: var(--text-dim); font-size: 0.95rem; margin-bottom: 14px; }
+    .tech-list {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      margin: 18px 0;
+    }
+    .tech-list .chip {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      background: var(--bg-card-alt);
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+    .project-card .status {
+      margin-top: 18px;
+      padding: 12px 16px;
+      background: var(--bg-card-alt);
+      border-radius: 8px;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      border-left: 2px solid var(--accent);
+    }
+    .project-card .status .label {
+      color: var(--text); font-weight: 600;
+      margin-right: 8px;
+    }
+
+    /* ---------- education & skills combined ---------- */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+    }
+    .info-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px;
+    }
+    .info-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+    .entry {
+      padding: 12px 0;
+      border-top: 1px solid var(--border);
+    }
+    .entry:first-of-type { border-top: none; padding-top: 0; }
+    .entry .org {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    .entry .detail {
+      color: var(--text-dim);
+      font-size: 0.88rem;
+      margin-top: 4px;
+    }
+
+    .skill-group { margin-bottom: 22px; }
+    .skill-group .glabel {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .skill-row {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+    }
+    .skill-row .name { color: var(--text); min-width: 120px; }
+    .skill-row .bar {
+      flex: 1; height: 6px;
+      background: var(--bg-card-alt);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .skill-row .bar > span {
+      display: block; height: 100%;
+      background: linear-gradient(90deg, var(--accent), #a371f7);
+      border-radius: 3px;
+    }
+    .skill-row .pct {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      min-width: 32px; text-align: right;
+    }
+
+    /* ---------- project list ---------- */
+    .project-list { display: flex; flex-direction: column; gap: 16px; }
+    .pr-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 26px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px 24px;
+      align-items: start;
+      transition: border-color .15s;
+    }
+    .pr-item:hover { border-color: var(--accent); }
+    .pr-item h4 {
+      font-size: 1.02rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .pr-item .desc {
+      color: var(--text-dim);
+      font-size: 0.88rem;
+      margin-bottom: 10px;
+    }
+    .pr-item .stars {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--text-dim);
+    }
+    .pr-item .links {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--accent);
+    }
+    .pr-item .links a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .pr-item .links a:hover { text-decoration: underline; }
+    .pr-right {
+      display: flex; flex-direction: column; gap: 6px; align-items: flex-end;
+    }
+
+    /* ---------- contact ---------- */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    .contact-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      text-align: center;
+      transition: border-color .15s;
+    }
+    .contact-item:hover { border-color: var(--accent); }
+    .contact-item .icon {
+      font-size: 1.6rem;
+      margin-bottom: 12px;
+    }
+    .contact-item .label {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+    .contact-item a {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    .contact-item a:hover { color: var(--accent); }
+
+    /* ---------- footer ---------- */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 0;
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 0.82rem;
+      font-family: var(--mono);
+    }
+    footer .shimmer {
+      display: inline-block;
+      width: 6px; height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      margin: 0 4px;
+      vertical-align: middle;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* ---------- mobile ---------- */
+    @media (max-width: 760px) {
+      .menu-btn { display: block; }
+      nav.links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 60px; left: 0; right: 0;
+        background: var(--bg);
+        border-bottom: 1px solid var(--border);
+        padding: 12px 24px;
+        gap: 2px;
+      }
+      nav.links.open { display: flex; }
+      .about-grid, .two-col { grid-template-columns: 1fr; }
+      .pr-item { grid-template-columns: 1fr; }
+      .pr-right { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============ NAV ============ -->
+  <header>
+    <div class="wrapper nav-inner">
+      <div class="logo">Baek<span>Changheon</span></div>
+      <button class="menu-btn" id="menuBtn" aria-label="메뉴 열기">메뉴</button>
+      <nav class="links" id="navLinks">
+        <a href="#about">About</a>
+        <a href="#project">현재 프로젝트</a>
+        <a href="#edu-skill">학력·스킬</a>
+        <a href="#works">작업물</a>
+        <a href="#contact">연락</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ============ HERO ============ -->
+  <div class="wrapper hero">
+    <div class="hero-tag">
+      <span class="dot"></span>
+      경남대학교 컴퓨터공학 3학년 · 개발 중
+    </div>
+    <h1>
+      <span class="highlight">백창헌</span><br />
+      AI 에이전트로<br />
+      제조업의 미래를 만드는<br />
+      컴퓨터공학도
+    </h1>
+    <p class="hero-sub">
+      Claude Code를 활용한 AI 팩토리 제조 에이전트를 개발하고 있습니다.<br />
+      코드와 에이전트가 실제 제조 현장에 어떻게 쓰일 수 있을지,
+      직접 만들고 공부하며 답을 찾는 중입니다.
+    </p>
+    <div class="hero-stats">
+      <div>
+        <div class="label">현재 상태</div>
+        <div class="val">재학 · 개발 중</div>
+      </div>
+      <div>
+        <div class="label">전공</div>
+        <div class="val">컴퓨터공학</div>
+      </div>
+      <div>
+        <div class="label">학년</div>
+        <div class="val">3학년</div>
+      </div>
+      <div>
+        <div class="label">핵심 도구</div>
+        <div class="val">Claude Code</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ ABOUT ============ -->
+  <section id="about">
+    <div class="wrapper">
+      <h2 class="section-title">About Me</h2>
+      <p class="section-sub">저에 대한 간단한 소개입니다.</p>
+      <div class="about-grid">
+        <div class="about-card">
+          <p>
+            <strong>백창헌</strong>입니다. 경남대학교 <strong>컴퓨터공학 전공 3학년</strong>으로,
+            현재 <strong>Claude Code를 활용한 AI 팩토리 제조 에이전트</strong>를 개발하고 있습니다.
+          </p>
+          <p>
+            AI 에이전트가 제조 현장의 업무를 어떻게 보조하고 자동화할 수 있을지에 관심이 많고,
+            직접 에이전트를 만들고 실험하면서 배우는 과정을 중요하게 생각합니다.
+            꾸준히 코드를 작성하고, 에이전트의 동작 방식과 한계를 탐구하는 데 집중하고 있습니다.
+          </p>
+          <div class="taglist">
+            <span class="tag">컴퓨터공학</span>
+            <span class="tag">AI 에이전트</span>
+            <span class="tag">Claude Code</span>
+            <span class="tag">제조 에이전트</span>
+            <span class="tag">학습 중</span>
+          </div>
+        </div>
+        <div class="about-card">
+          <p><strong>작업 스타일</strong></p>
+          <p>
+            문서를 먼저 정리하고, 그다음 코드로 검증하는 편입니다.
+            에이전트를 만들 때도 프롬프트와 도구를 단계적으로 설계하며,
+            어떤 조건에서 에이전트가 잘 동작하고 어디서 막히는지를 직접 확인하는 방식으로 공부합니다.
+          </p>
+          <p><strong>사용하는 접근법</strong></p>
+          <p>
+            Claude Code를 활용해 에이전트 흐름을 구성하고,
+            필요한 부분은 직접 코딩으로 보완합니다.
+            제조라는 도메인 지식을 함께 이해하면서,
+            에이전트가 실제로 쓸모 있는 결과물을 내도록 만드는 데 관심을 두고 있습니다.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CURRENT PROJECT ============ -->
+  <section id="project">
+    <div class="wrapper">
+      <h2 class="section-title">현재 프로젝트</h2>
+      <p class="section-sub">지금 가장 집중하고 있는 작업입니다.</p>
+
+      <div class="project-card">
+        <span class="badge">● 현재 개발 중</span>
+        <h3>AI 팩토리 제조 에이전트<br /><span style="color:var(--text-dim); font-weight:400; font-size:1rem;">— Claude Code 기반</span></h3>
+
+        <p class="meta">
+          경남대학교 컴퓨터공학 3학년 · 백창헌
+        </p>
+
+        <p>
+          Claude Code를 활용해 <strong>제조 현장 업무를 보조하는 AI 에이전트</strong>를 개발하고 있습니다.
+          제조 도메인의 작업 흐름을 에이전트가 이해하고, 필요한 정보를 정리하거나
+          다음 행동을 제안할 수 있도록 구성하는 것이 목표입니다.
+        </p>
+
+        <p>
+          에이전트가 단순히 질문에 답하는 수준을 넘어,
+          실제 제조 업무 맥락에서 쓸 수 있는 동작 흐름을 갖추는 데 초점을 두고 공부하며 만들고 있습니다.
+        </p>
+
+        <div class="tech-list">
+          <span class="chip">Claude Code</span>
+          <span class="chip">AI 에이전트</span>
+          <span class="chip">프롬프트 설계</span>
+          <span class="chip">도구/orchestration</span>
+          <span class="chip">Python</span>
+          <span class="chip">제조사례 분석</span>
+        </div>
+
+        <div class="status">
+          <div><span class="label">상태</span> 현재 학습 + 개발 중</div>
+          <div style="margin-top:8px;"><span class="label">집중 포인트</span></div>
+          <div style="margin-top:4px; color:var(--text-dim);">
+            · Claude Code를 활용한 에이전트 구성 방식 탐구<br />
+            · 제조 도메인 작업을 에이전트가 다루는 흐름 설계<br />
+            · 에이전트의 동작 한계와 개선 지점 직접 확인
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ EDUCATION & SKILLS ============ -->
+  <section id="edu-skill">
+    <div class="wrapper">
+      <h2 class="section-title">학력 · 스킬</h2>
+      <p class="section-sub">현재까지 쌓은 배경과 사용 가능한 도구들입니다.</p>
+
+      <div class="two-col">
+
+        <!-- education -->
+        <div class="info-card">
+          <h3>학력</h3>
+          <div class="entry">
+            <div class="org">경남대학교</div>
+            <div class="detail">컴퓨터공학 전공 · 3학년 재학 중</div>
+          </div>
+          <div class="entry">
+            <div class="org">관심 트랙</div>
+            <div class="detail">AI 에이전트 · 소프트웨어 개발 · 제조 도메인 적용</div>
+          </div>
+        </div>
+
+        <!-- skills -->
+        <div class="info-card">
+          <h3>스킬</h3>
+
+          <div class="skill-group">
+            <div class="glabel">언어 · 도구</div>
+            <div class="skill-row">
+              <span class="name">Python</span>
+              <span class="bar"><span style="width:75%"></span></span>
+              <span class="pct">75%</span>
+            </div>
+            <div class="skill-row">
+              <span class="name">JavaScript</span>
+              <span class="bar"><span style="width:60%"></span></span>
+              <span class="pct">60%</span>
+            </div>
+            <div class="skill-row">
+              <span class="name">HTML/CSS</span>
+              <span class="bar"><span style="width:70%"></span></span>
+              <span class="pct">70%</span>
+            </div>
+            <div class="skill-row">
+              <span class="name">Git / GitHub</span>
+              <span class="bar"><span style="width:65%"></span></span>
+              <span class="pct">65%</span>
+            </div>
+            <div class="skill-row">
+              <span class="name">Linux / 터미널</span>
+              <span class="bar"><span style="width:55%"></span></span>
+              <span class="pct">55%</span>
+            </div>
+          </div>
+
+          <div class="skill-group">
+            <div class="glabel">AI · 에이전트</div>
+            <div class="skill-row">
+              <span class="name">Claude Code</span>
+              <span class="bar"><span style="width:60%"></span></span>
+              <span class="pct">학습·활용 중</span>
+            </div>
+            <div class="skill-row">
+              <span class="name">프롬프트 설계</span>
+              <span class="bar"><span style="width:55%"></span></span>
+              <span class="pct">학습·활용 중</span>
+            </div>
+            <div class="skill-row">
+              <span class="name">에이전트 흐름 구성</span>
+              <span class="bar"><span style="width:50%"></span></span>
+              <span class="pct">학습 중</span>
+            </div>
+          </div>
+
+          <div class="skill-group">
+            <div class="glabel">관심 · 학습 중</div>
+            <div class="skill-row">
+              <span class="name">AI 팩토리 / 제조 에이전트</span>
+              <span class="bar"><span style="width:45%"></span></span>
+              <span class="pct">현재 집중</span>
+            </div>
+            <div class="skill-row">
+              <span class="name">도메인 지식(제조)</span>
+              <span class="bar"><span style="width:40%"></span></span>
+              <span class="pct">공부 중</span>
+            </div>
+          </div>
+          <p style="color:var(--text-dim); font-size:0.78rem; margin-top:14px;">
+            숙련도는 현재 시점을 기준으로 한 주관적인 판단이며, 계속 갱신됩니다.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ WORKS ============ -->
+  <section id="works">
+    <div class="wrapper">
+      <h2 class="section-title">작업물</h2>
+      <p class="section-sub">지금까지의 프로젝트 모음입니다.</p>
+
+      <div class="project-list">
+
+        <div class="pr-item">
+          <div>
+            <h4>AI 팩토리 제조 에이전트 (현재)</h4>
+            <div class="desc">
+              Claude Code를 활용한 제조 현장 보조 에이전트 개발 및 학습.
+              현재 가장 집중하고 있는 메인 프로젝트입니다.
+            </div>
+            <div class="stars">핵심 프로젝트 · 진행 중</div>
+          </div>
+          <div class="pr-right">
+            <span class="links"># Claude Code</span>
+          </div>
+        </div>
+
+        <div class="pr-item">
+          <div>
+            <h4>수업/개인 프로젝트</h4>
+            <div class="desc">
+              대학 수업과 개인 학습을 통해 진행한 프로젝트들을 정리 중입니다.
+              세부 항목은 개발 및 정리되는 대로 채울 예정입니다.
+            </div>
+            <div class="stars">정리 중 · 추가 예정</div>
+          </div>
+          <div class="pr-right">
+            <span class="links">링크 추가 예정</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div style="margin-top:20px; padding:16px 20px; background:var(--bg-card); border:1px dashed var(--border); border-radius:10px; font-size:0.88rem; color:var(--text-dim);">
+        위 작업물은 대표적인 섹션을 먼저 잡아둔 상태입니다.
+        GitHub 저장소, 데모 링크, 세부 기술 스택 등이 정리되면
+        같은 구조로 항목을 추가할 수 있습니다.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CONTACT ============ -->
+  <section id="contact">
+    <div class="wrapper">
+      <h2 class="section-title">연락 · 링크</h2>
+      <p class="section-sub">저와 연결될 수 있는 채널입니다.</p>
+
+      <div class="contact-grid">
+        <div class="contact-item">
+          <div class="icon">📧</div>
+          <div class="label">이메일</div>
+          <a href="mailto:hello@example.com">hello@example.com</a>
+        </div>
+        <div class="contact-item">
+          <div class="icon">🐙</div>
+          <div class="label">GitHub</div>
+          <a href="https://github.com/your-id" target="_blank">github.com/your-id</a>
+        </div>
+        <div class="contact-item">
+          <div class="icon">💼</div>
+          <div class="label">LinkedIn</div>
+          <a href="https://linkedin.com/in/your-id" target="_blank">linkedin.com/in/your-id</a>
+        </div>
+        <div class="contact-item">
+          <div class="icon">💬</div>
+          <div class="label">메시지</div>
+          <a href="mailto:hello@example.com">이메일로 연락하기</a>
+        </div>
+      </div>
+
+      <div style="margin-top:24px; padding:16px 20px; background:var(--bg-card); border:1px solid var(--border); border-radius:10px; font-size:0.88rem; color:var(--text-dim);">
+        위 링크는 예시 값입니다. 본인의 GitHub, 이메일, LinkedIn 등으로 수정해서 사용하시면 됩니다.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="wrapper">
+    <div>
+      <span class="shimmer"></span>
+      백창헌 · 경남대학교 컴퓨터공학 3학년
+      <span class="shimmer"></span>
+    </div>
+    <div style="margin-top:8px;">
+      AI 팩토리 제조 에이전트 개발 중 · Claude Code 기반
+    </div>
+  </footer>
+
+  <!-- ============ JS ============ -->
+  <script>
+    const menuBtn = document.getElementById('menuBtn');
+    const navLinks = document.getElementById('navLinks');
+
+    menuBtn.addEventListener('click', () => {
+      navLinks.classList.toggle('open');
+    });
+
+    // 메뉴 밖 클릭 시 닫기
+    document.addEventListener('click', (e) => {
+      if (!navLinks.contains(e.target) && !menuBtn.contains(e.target)) {
+        navLinks.classList.remove('open');
+      }
+    });
+
+    // 내림이 있는 네비게이션 클릭 시 약간의 여유
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', (e) => {
+        const id = a.getAttribute('href').slice(1);
+        const el = document.getElementById(id);
+        if (el) {
+          e.preventDefault();
+          const y = el.getBoundingClientRect().top + window.scrollY - 70;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+          navLinks.classList.remove('open');
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
